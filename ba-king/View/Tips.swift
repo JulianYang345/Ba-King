@@ -8,11 +8,21 @@
 import SwiftUI
 
 struct Tips: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+	var body: some View {
+		VStack {
+			VStack(spacing: 10) {
+				TipsCard()
+				TipsCardDivider()
+				TipsCard()
+				TipsCardDivider()
+				TipsCard()
+				TipsCardDivider()
+				TipsCard()
+			}
+		}
+	}
 }
 
 #Preview {
-    Tips()
+	Tips()
 }
