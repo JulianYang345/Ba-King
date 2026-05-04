@@ -11,14 +11,12 @@ struct Tips: View {
 	var body: some View {
 		VStack {
 			VStack(spacing: 10) {
-				TipsCard()
-				TipsCardDivider()
-				TipsCard()
-				TipsCardDivider()
-				TipsCard()
-				TipsCardDivider()
-				TipsCard()
+				ForEach(tips_list, id: \.title) { tips in
+					TipsCard(tips: tips)
+					TipsCardDivider()
+				}
 			}
+			.padding(20)
 		}
 	}
 }

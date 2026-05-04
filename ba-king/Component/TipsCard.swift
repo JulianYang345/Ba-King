@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct TipsCard: View {
+	let tips: TipsInfo
+
 	var body: some View {
 		HStack(spacing: 10) {
-			Color.gray
+			ImagePlaceholder(image: tips.look.image)
 				.frame(width: 90, height: 120)
 				.clipShape(RoundedRectangle(cornerRadius: 20))
 			VStack(alignment: .leading, spacing: 8) {
-				Text("Runny Batter")
+				Text(tips.title)
 					.font(.system(size: 18, weight: .bold))
-				Text("It looks like heavy cream or thin pancake batter. When you lift a whisk, it streams down instantly without leaving a trail (ribbon) on the surface, appearing shiny and liquid.")
+				Text(tips.look.description)
 					.font(.system(size: 12))
 			}
+			.frame(maxWidth: .infinity)
 			Image(systemName: "chevron.right")
 				.font(.system(size: 12, weight: .semibold))
 		}
@@ -26,6 +29,6 @@ struct TipsCard: View {
 }
 
 #Preview {
-	TipsCard()
+	TipsCard(tips: tips_runny_batter)
 		.padding(20)
 }
