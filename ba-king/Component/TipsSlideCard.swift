@@ -21,6 +21,7 @@ struct TipsSlideCard: View {
 				Text(info.description)
 					.font(.system(size: 16))
 			}
+			.frame(maxWidth: .infinity, alignment: .leading)
 			Spacer()
 		}
 	}
