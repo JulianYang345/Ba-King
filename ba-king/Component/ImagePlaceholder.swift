@@ -14,7 +14,7 @@ struct ImagePlaceholder: View {
 		if let image {
 			image
 		} else {
-			Color.gray
+			Color.gray.brightness(0.3)
 		}
 	}
 }

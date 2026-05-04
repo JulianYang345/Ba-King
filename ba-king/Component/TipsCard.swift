@@ -20,6 +20,7 @@ struct TipsCard: View {
 					.font(.system(size: 18, weight: .bold))
 				Text(tips.look.description)
 					.font(.system(size: 12))
+					.foregroundColor(.gray)
 			}
 			.frame(maxWidth: .infinity)
 			Image(systemName: "chevron.right")

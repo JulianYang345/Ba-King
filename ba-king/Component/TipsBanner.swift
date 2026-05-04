@@ -10,7 +10,15 @@ import SwiftUI
 struct TipsBanner: View {
 	var body: some View {
 		ZStack {
-			Color.orange
+			LinearGradient(
+				stops: [
+					.init(color: Color("primary_orange_color"), location: 0.0),
+					.init(color: Color("primary_orange_color"), location: 0.64),
+					.init(color: .white, location: 1.0)
+				],
+				startPoint: .top,
+				endPoint: .bottom
+			)
 			Image("TipsBannerIcon")
 				.renderingMode(.template)
 				.foregroundColor(.white)
@@ -31,4 +39,5 @@ struct TipsBanner: View {
 
 #Preview {
 	TipsBanner()
+		.frame(height: 350)
 }
