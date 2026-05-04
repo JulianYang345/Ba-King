@@ -10,6 +10,8 @@ import SwiftUI
 struct Tips: View {
 	var body: some View {
 		VStack {
+			TipsBanner()
+				.frame(height: 350)
 			VStack(spacing: 10) {
 				ForEach(tips_list) { tips in
 					TipsCard(tips: tips)
