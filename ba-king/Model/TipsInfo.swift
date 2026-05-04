@@ -12,7 +12,8 @@ struct Info {
 	let description : String
 }
 
-struct TipsInfo {
+struct TipsInfo : Identifiable {
+	let id = UUID()
 	let title : String
 	let look : Info
 	let cause : Info

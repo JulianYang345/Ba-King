@@ -11,9 +11,11 @@ struct Tips: View {
 	var body: some View {
 		VStack {
 			VStack(spacing: 10) {
-				ForEach(tips_list, id: \.title) { tips in
+				ForEach(tips_list) { tips in
 					TipsCard(tips: tips)
-					TipsCardDivider()
+					if tips.id != tips_list.last?.id {
+						TipsCardDivider()
+					}
 				}
 			}
 			.padding(20)
