@@ -12,9 +12,13 @@ struct TipsBanner: View {
 		ZStack {
 			LinearGradient(
 				stops: [
-					.init(color: Color("primary_orange_color"), location: 0.0),
-					.init(color: Color("primary_orange_color"), location: 0.64),
-					.init(color: .white, location: 1.0)
+					.init(color: Color("primary_orange_color").opacity(1), location: 0.0),
+					.init(color: Color("primary_orange_color").opacity(0.95), location: 0.6),
+					.init(color: Color("primary_orange_color").opacity(0.9), location: 0.7),
+					.init(color: Color("primary_orange_color").opacity(0.8), location: 0.8),
+					.init(color: Color("primary_orange_color").opacity(0.65), location: 0.9),
+					.init(color: Color("primary_orange_color").opacity(0.4), location: 0.95),
+					.init(color: Color("primary_orange_color").opacity(0), location: 1.0),
 				],
 				startPoint: .top,
 				endPoint: .bottom
