@@ -10,6 +10,7 @@ import SwiftUI
 struct Main: View {
 		@StateObject private var cameraVM = CameraViewModel()
 		@State private var isNavigating = false
+		@State private var isDone = false
 
 		var body: some View {
 				NavigationStack {
@@ -60,6 +61,8 @@ struct Main: View {
 										}
 										.padding(.horizontal, 26)
 								}
+							NavigationLink("", destination: Tips(), isActive: $isNavigating)
+							NavigationLink("", destination: DoneView(), isActive: $isDone)
 						}
 						.onAppear {
 								// 2. Load the image safely into memory
@@ -74,6 +77,11 @@ struct Main: View {
 								cameraVM.start()
 						}
 						.onDisappear { cameraVM.stop() }
+						.onChange(of: cameraVM.matchPercentage) { newValue in
+								if newValue >= 1.0 {
+										isDone = true
+								}
+						}
 						.navigationBarTitleDisplayMode(.inline)
 						.toolbar {
 								ToolbarItem(placement: .principal) {
@@ -93,7 +101,6 @@ struct Main: View {
 										}
 								}
 						}
-					NavigationLink("", destination: Tips(),isActive: $isNavigating)
 				}
 		}
 }
