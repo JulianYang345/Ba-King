@@ -8,11 +8,14 @@
 import AVFoundation
 import Combine
 import SwiftUI
+import Vision
  
 class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
  
 		@Published var authorizationStatus: AVAuthorizationStatus = .notDetermined
 		@Published var matchPercentage: Double = 0.0   // stub — fill in once matching logic is ready
+	
+		private var goldenObservation: VNFeaturePrintObservation?
  
 		let session = AVCaptureSession()
  
@@ -89,6 +92,24 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 						self?.session.startRunning()
 				}
 		}
+	
+		// Golden truth setup
+		func loadGoldenTruth(from image: UIImage) {
+				guard let cgImage = image.cgImage else { return }
+				
+				let request = VNGenerateImageFeaturePrintRequest()
+				let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+				
+				do {
+						try handler.perform([request])
+						if let observation = request.results?.first as? VNFeaturePrintObservation {
+								self.goldenObservation = observation
+								print("Golden Truth loaded.")
+						}
+				} catch {
+						print("Failed to load golden truth: \(error.localizedDescription)")
+				}
+		}
  
 		// capture frame
 		private func scheduleTimer() {
@@ -98,13 +119,52 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		}
  
 		private func processLatestFrame() {
-				guard
-						let buffer = latestBuffer,
-						let image  = convertToUIImage(buffer: buffer)
-				else { return }
- 
-				// buat nanti matching
-				_ = image
+				// 1. Ensure we have a buffer and our golden truth is ready
+				guard let buffer = latestBuffer,
+							let pixelBuffer = CMSampleBufferGetImageBuffer(buffer),
+							let goldenObservation = self.goldenObservation else { return }
+				
+				// 2. We move the heavy Vision processing to a background thread
+				// so your UI doesn't stutter every 3 seconds.
+				DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+						
+						let request = VNGenerateImageFeaturePrintRequest()
+						let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
+						
+						do {
+								try handler.perform([request])
+								guard let liveObservation = request.results?.first as? VNFeaturePrintObservation else { return }
+								
+								// 3. Calculate the distance
+								var distance: Float = 0
+								try liveObservation.computeDistance(&distance, to: goldenObservation)
+								
+								// 4. Convert distance (Float) to percentage (Double) and update UI
+								let percentage = self?.convertDistanceToPercentage(distance) ?? 0.0
+								
+								DispatchQueue.main.async {
+										self?.matchPercentage = percentage
+								}
+								
+						} catch {
+								print("Vision comparison failed: \(error.localizedDescription)")
+						}
+				}
+		}
+	
+		private func convertDistanceToPercentage(_ distance: Float) -> Double {
+				// A distance of 0 is a 100% match.
+				// You will need to test with real batter to find the "max distance"
+				// where the batter is completely wrong. Let's assume 30.0 for now.
+				let maxDistance: Float = 30.0
+				
+				// Clamp the distance so it doesn't go over max
+				let clampedDistance = min(max(distance, 0), maxDistance)
+				
+				// Invert it to get a percentage
+				let percentage = (1.0 - (clampedDistance / maxDistance)) * 100.0
+				
+				return Double(percentage)
 		}
  
 		private func convertToUIImage(buffer: CMSampleBuffer) -> UIImage? {
