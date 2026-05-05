@@ -12,7 +12,7 @@ struct Main: View {
 		@State private var isNavigating = false
 
 		var body: some View {
-//				NavigationStack {
+				NavigationStack {
 						ZStack {
 								Image("main - VERTICAL")
  
@@ -63,11 +63,6 @@ struct Main: View {
 						.onDisappear { cameraVM.stop() }
 						.navigationBarTitleDisplayMode(.inline)
 						.toolbar {
-								ToolbarItem(placement: .topBarLeading) {
-										Button(action: {}) {
-												Image(systemName: "chevron.backward")
-										}
-								}
 								ToolbarItem(placement: .principal) {
 										VStack {
 												Text("MIXING CHECKER")
@@ -88,7 +83,7 @@ struct Main: View {
 					NavigationLink("", destination: Tips(),isActive: $isNavigating)
 				}
 		}
-//}
+}
  
 #Preview {
 		Main()
