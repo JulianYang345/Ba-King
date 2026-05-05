@@ -23,9 +23,11 @@ struct Main: View {
 												Text("REFERENCE")
 														.font(.custom("Helvetica", size: 16))
 														.bold()
-												RoundedRectangle(cornerRadius: 20)
-														.fill(Color(red: 0.85, green: 0.85, blue: 0.85))
+												Image("PerfectBatter")
+														.resizable()
+														.scaledToFill()
 														.frame(height: 200)
+														.clipShape(RoundedRectangle(cornerRadius: 20))
  
 												// Live Feed
 												Text("LIVE FEED")
@@ -59,7 +61,18 @@ struct Main: View {
 										.padding(.horizontal, 26)
 								}
 						}
-						.onAppear { cameraVM.start() }
+						.onAppear {
+								// 2. Load the image safely into memory
+								if let goldenUIImage = UIImage(named: "PerfectBatter") {
+										// Feed the visual signature to your analyzer
+										cameraVM.loadGoldenTruth(from: goldenUIImage)
+								} else {
+										print("Error: Could not find 'PerfectBatter' in Assets.")
+								}
+								
+								// Start the camera feed
+								cameraVM.start()
+						}
 						.onDisappear { cameraVM.stop() }
 						.navigationBarTitleDisplayMode(.inline)
 						.toolbar {
