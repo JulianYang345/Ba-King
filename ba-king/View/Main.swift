@@ -9,7 +9,8 @@ import SwiftUI
  
 struct Main: View {
 		@StateObject private var cameraVM = CameraViewModel()
- 
+		@State private var isNavigating = false
+
 		var body: some View {
 				NavigationStack {
 						ZStack {
@@ -76,12 +77,15 @@ struct Main: View {
 														.foregroundStyle(Color(red: 0.85, green: 0.85, blue: 0.85))
 										}
 								}
+						
 								ToolbarItem(placement: .topBarTrailing) {
-										Button(action: {}) {
-												Image(systemName: "lightbulb.max.fill")
+									Button {
+										isNavigating = true} label: {
+											Image(systemName: "lightbulb.max.fill")
 										}
 								}
 						}
+					NavigationLink("", destination: Tips(),isActive: $isNavigating)
 				}
 		}
 }
