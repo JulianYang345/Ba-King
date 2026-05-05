@@ -32,7 +32,7 @@ let tips_list = [
 let tips_runny_batter = TipsInfo(
 	title: "Runny Batter",
 	look: Info(
-		image: nil,
+		image: Image("runny-look"),
 		title: "The Look",
 		description: "The batter will appear very thin and liquid, lacking the airy, voluminous structure typical of a proper sponge. It will easily pour out of the bowl like pancake batter rather than falling in thick ribbons."
 	),
@@ -56,7 +56,7 @@ let tips_runny_batter = TipsInfo(
 let tips_clumpy_batter = TipsInfo(
 	title: "Clumpy Batter",
 	look: Info(
-		image: nil,
+		image: Image("clumpy-look"),
 		title: "The Look",
 		description: "You will see visible white streaks or small, stubborn balls of dry flour floating throughout the yellow egg mixture. The texture looks uneven and \"lumpy\" rather than smooth and satiny."
 	),
@@ -80,7 +80,7 @@ let tips_clumpy_batter = TipsInfo(
 let tips_thick_batter = TipsInfo(
 	title: "Thick Batter",
 	look: Info(
-		image: nil,
+		image: Image("thick-look"),
 		title: "The Look",
 		description: "The batter appears heavy and stiff, resisting movement when you try to fold it. It might look more like a dense cookie dough or a heavy pound cake batter rather than a light, foamy sponge."
 	),
@@ -104,7 +104,7 @@ let tips_thick_batter = TipsInfo(
 let tips_dry_batter = TipsInfo(
 	title: "Dry Batter",
 	look: Info(
-		image: nil,
+		image: Image("dry-look"),
 		title: "The Look",
 		description: "The mixture looks \"shaggy\" and dull, with parts of the batter appearing almost crumbly. It lacks any sheen or flow, looking more like a paste than a cohesive cake batter."
 	),
@@ -124,3 +124,7 @@ let tips_dry_batter = TipsInfo(
 		description: "Whisk an extra egg with a teaspoon of water and very carefully fold it into the batter to restore moisture. You must be extremely gentle during this process to avoid making the finished cake even tougher."
 	)
 )
+
+#Preview {
+	Tips()
+}
