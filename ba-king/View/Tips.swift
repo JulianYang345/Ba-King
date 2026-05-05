@@ -8,11 +8,36 @@
 import SwiftUI
 
 struct Tips: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+	var body: some View {
+		NavigationStack {
+			ZStack {
+				Image("tips-background")
+					.resizable()
+					.ignoresSafeArea()
+				ScrollView {
+					VStack {
+						TipsBanner()
+							.frame(height: 350)
+						VStack(spacing: 10) {
+							ForEach(tips_list) { tips in
+								NavigationLink(destination: TipsSlide(tips: tips)) {
+									TipsCard(tips: tips)
+								}
+								.buttonStyle(.plain)
+								if tips.id != tips_list.last?.id {
+									TipsCardDivider()
+								}
+							}
+						}
+						.padding(20)
+					}
+				}
+			}
+			.ignoresSafeArea(edges: .top)
+		}
+	}
 }
 
 #Preview {
-    Tips()
+	Tips()
 }
