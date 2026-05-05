@@ -12,7 +12,7 @@ struct Main: View {
 		@State private var isNavigating = false
 
 		var body: some View {
-				NavigationStack {
+//				NavigationStack {
 						ZStack {
 								Image("main - VERTICAL")
  
@@ -88,7 +88,7 @@ struct Main: View {
 					NavigationLink("", destination: Tips(),isActive: $isNavigating)
 				}
 		}
-}
+//}
  
 #Preview {
 		Main()

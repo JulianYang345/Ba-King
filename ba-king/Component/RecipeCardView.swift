@@ -11,10 +11,16 @@ import SwiftUI
 
 struct RecipeCardView: View {
 		let category: RecipeCategory
-		
+	@State private var showAlert = false
+	@State private var navigate = false
 		var body: some View {
 				ZStack(alignment: .bottomLeading) {
 						
+						//Navigation link
+						NavigationLink(destination: Main(), isActive: $navigate) {
+							EmptyView()
+						}.hidden()
+					
 						//Image call
 						Image(category.imageName).resizable().scaledToFill().frame(width: 280, height: 380).clipped()
 						
@@ -32,11 +38,21 @@ struct RecipeCardView: View {
 								
 							Text(category.subtitle).font(.system(size: 14)).italic().foregroundColor(Color(red: 1, green: 1, blue: 1).opacity(0.9)).lineLimit(2)
 						}.padding(20)
-						
 				}.frame(width: 280, height: 380).clipShape(RoundedRectangle(cornerRadius: 32))
 				//outline
 				.overlay(
 						RoundedRectangle(cornerRadius: 32).stroke(Color(red: 0.96, green: 0.89, blue: 0.87), lineWidth: 10)
 				).shadow(color: .black.opacity(0.2), radius: 12, x: 0, y: 8)
+				.onTapGesture {
+					if category.destination == .ComingSoon {
+						showAlert = true
+					} else {
+						navigate = true
+					}
+				}.alert("Feature In Progress", isPresented: $showAlert) {
+						Button("Got it!", role: .cancel) {}
+				} message: {
+					Text("This recipe category is still being baked! 🍞 Check back soon.")
+				}
 		}
 }
