@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct HomeView: View {
 	var body: some View {
 		ZStack{
 			ZStack(alignment: .topTrailing){
@@ -58,5 +58,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView()
+	HomeView()
 }
