@@ -22,16 +22,25 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
  
 		// start stop
 		func start() {
+			#if !targetEnvironment(simulator)
+
 				checkAuthorization()
 				scheduleTimer()
+			#endif
+
 		}
  
 		func stop() {
 				timer?.invalidate()
 				timer = nil
+				#if !targetEnvironment(simulator)
+
 				session.stopRunning()
+				#endif
+
 		}
- 
+		#if !targetEnvironment(simulator)
+
 		// Authorization + Setup
 		private func checkAuthorization() {
 				switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -111,4 +120,6 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 											 from connection: AVCaptureConnection) {
 				latestBuffer = sampleBuffer
 		}
+	#endif
 }
+		
