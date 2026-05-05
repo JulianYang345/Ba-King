@@ -13,7 +13,7 @@ struct Main: View {
 		@State private var isDone = false
 
 		var body: some View {
-				NavigationStack {
+//				NavigationStack {
 						ZStack {
 								Image("main - VERTICAL")
  
@@ -37,6 +37,7 @@ struct Main: View {
 												CameraPreview(session: cameraVM.session)
 														.frame(height: 350)
 														.clipShape(RoundedRectangle(cornerRadius: 20))
+														.ignoresSafeArea()
  
 												// Progress Bar
 												HStack {
@@ -103,7 +104,7 @@ struct Main: View {
 						}
 				}
 		}
-}
+//}
  
 #Preview {
 		Main()

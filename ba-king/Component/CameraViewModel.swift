@@ -16,7 +16,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		@Published var matchPercentage: Double = 0.0   // stub — fill in once matching logic is ready
 	
 		private var goldenObservation: VNFeaturePrintObservation?
- 
+		private var isConfigured = false
+
 		let session = AVCaptureSession()
  
 		private let videoOutput = AVCaptureVideoDataOutput()
@@ -26,8 +27,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		// start stop
 		func start() {
 			#if !targetEnvironment(simulator)
-
 				checkAuthorization()
+				startSession()
 				scheduleTimer()
 			#endif
 
@@ -44,6 +45,21 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		}
 		#if !targetEnvironment(simulator)
 
+		private func startSession() {
+			guard !session.isRunning else { return }
+
+			DispatchQueue.global(qos: .userInitiated).async {
+					self.session.startRunning()
+			}
+		}
+
+		private func stopSession() {
+				guard session.isRunning else { return }
+
+				DispatchQueue.global(qos: .userInitiated).async {
+						self.session.stopRunning()
+				}
+		}
 		// Authorization + Setup
 		private func checkAuthorization() {
 				switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -68,6 +84,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		}
  
 		private func setupCamera() {
+				guard !isConfigured else { return }
+				isConfigured = true
 				session.beginConfiguration()
  
 				guard
@@ -78,19 +96,17 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 						session.commitConfiguration()
 						return
 				}
- 
 				session.addInput(input)
- 
 				videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "camera.frame.queue"))
 				if session.canAddOutput(videoOutput) {
 						session.addOutput(videoOutput)
 				}
  
 				session.commitConfiguration()
- 
-				DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-						self?.session.startRunning()
-				}
+				startSession()
+//				DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//						self?.session.startRunning()
+//				}
 		}
 	
 		// Golden truth setup

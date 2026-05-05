@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Tips: View {
 	var body: some View {
-		NavigationStack {
+//		NavigationStack {
 			ZStack {
 				Image("tips-background")
 					.resizable()
@@ -34,7 +34,7 @@ struct Tips: View {
 				}
 			}
 			.ignoresSafeArea(edges: .top)
-		}
+//		}
 	}
 }
 
