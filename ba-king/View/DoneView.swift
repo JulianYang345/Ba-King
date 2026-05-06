@@ -26,30 +26,31 @@ struct DoneView: View {
 				}.hidden()
 				
 				VStack(spacing: 20) {
-					
-					Spacer().frame(height: 40)
-					
-					Image("Logo")
-						.resizable()
-						.scaledToFit()
-						.frame(width: 200)
-					
-					Text("YOU'VE DOUGH IT!")
-						.font(.system(size: 25, weight: .bold))
-						.foregroundColor(.primaryOrange)
-					
-					Text("Your dough looks ready to rest.")
-						.font(.system(size: 15))
-						.foregroundColor(Color(red: 0.30, green: 0.30, blue: 0.30))
-					
-					ZStack {
-						Circle()
-							.fill(Color.green)
-							.frame(width: 75, height: 75)
+					VStack(spacing: 20){
+						Spacer().frame(height: 40)
 						
-						Image(systemName: "checkmark")
-							.font(.system(size: 32))
-							.foregroundColor(.white)
+						Image("Logo")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 120)
+						
+						Text("YOU'VE DOUGH IT!")
+							.font(.system(size: 25, weight: .bold))
+							.foregroundColor(.primaryOrange)
+						
+						Text("Your dough looks ready to rest.")
+							.font(.system(size: 15))
+							.foregroundColor(Color(red: 0.30, green: 0.30, blue: 0.30))
+						
+						ZStack {
+							Circle()
+								.fill(Color.green)
+								.frame(width: 75, height: 75)
+							
+							Image(systemName: "checkmark")
+								.font(.system(size: 32))
+								.foregroundColor(.white)
+						}
 					}
 					
 					HStack {

@@ -102,6 +102,11 @@ struct Main: View {
 										}
 								}
 						}
+						NavigationLink("", destination: Tips(),isActive: $isNavigating)
+						//pop up Instruction call
+						.sheet(isPresented: $instruction) {
+								InstructionView()
+						}
 				}
 		}
 //}
