@@ -11,6 +11,7 @@ struct Main: View {
 		@StateObject private var cameraVM = CameraViewModel()
 		@State private var isNavigating = false
 		@State private var isDone = false
+		@State private var instruction = false
 
 		var body: some View {
 //				NavigationStack {
@@ -68,6 +69,7 @@ struct Main: View {
 							NavigationLink("", destination: DoneView(), isActive: $isDone)
 						}
 						.onAppear {
+							instruction = true
 								// 2. Load the image safely into memory
 								if let goldenUIImage = UIImage(named: "PerfectBatter") {
 										// Feed the visual signature to your analyzer
