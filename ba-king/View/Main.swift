@@ -24,6 +24,7 @@ struct Main: View {
 												Text("REFERENCE")
 														.font(.custom("Helvetica", size: 16))
 														.bold()
+														.foregroundStyle(Color(.black))
 												Image("PerfectBatter")
 														.resizable()
 														.scaledToFill()
@@ -34,6 +35,7 @@ struct Main: View {
 												Text("LIVE FEED")
 														.font(.custom("Helvetica", size: 16))
 														.bold()
+														.foregroundStyle(Color(.black))
 												CameraPreview(session: cameraVM.session)
 														.frame(height: 350)
 														.clipShape(RoundedRectangle(cornerRadius: 20))
@@ -89,6 +91,7 @@ struct Main: View {
 										VStack {
 												Text("MIXING CHECKER")
 														.font(.system(size: 15, weight: .bold))
+														.foregroundStyle(Color(.black))
 												Text("MIX UNTIL THE BAR REACHES 100%")
 														.font(.system(size: 12, weight: .medium))
 														.foregroundStyle(Color(red: 0.85, green: 0.85, blue: 0.85))
