@@ -1,0 +1,208 @@
+//
+//   CameraViewModel.swift
+//  ba-king
+//
+//  Created by Laurentius Nicholas on 04/05/26.
+//
+
+import AVFoundation
+import Combine
+import SwiftUI
+import Vision
+ 
+class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+ 
+		@Published var authorizationStatus: AVAuthorizationStatus = .notDetermined
+		@Published var matchPercentage: Double = 0.0   // stub — fill in once matching logic is ready
+	
+		private var goldenObservation: VNFeaturePrintObservation?
+		private var isConfigured = false
+
+		let session = AVCaptureSession()
+ 
+		private let videoOutput = AVCaptureVideoDataOutput()
+		private var latestBuffer: CMSampleBuffer?
+		private var timer: Timer?
+ 
+		// start stop
+		func start() {
+			#if !targetEnvironment(simulator)
+				checkAuthorization()
+				startSession()
+				scheduleTimer()
+			#endif
+
+		}
+ 
+		func stop() {
+				timer?.invalidate()
+				timer = nil
+				#if !targetEnvironment(simulator)
+
+				session.stopRunning()
+				#endif
+
+		}
+		#if !targetEnvironment(simulator)
+
+		private func startSession() {
+			guard !session.isRunning else { return }
+
+			DispatchQueue.global(qos: .userInitiated).async {
+					self.session.startRunning()
+			}
+		}
+
+		private func stopSession() {
+				guard session.isRunning else { return }
+
+				DispatchQueue.global(qos: .userInitiated).async {
+						self.session.stopRunning()
+				}
+		}
+		// Authorization + Setup
+		private func checkAuthorization() {
+				switch AVCaptureDevice.authorizationStatus(for: .video) {
+				case .authorized:
+						authorizationStatus = .authorized
+						setupCamera()
+ 
+				case .notDetermined:
+						AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+								DispatchQueue.main.async {
+										self?.authorizationStatus = granted ? .authorized : .denied
+										if granted { self?.setupCamera() }
+								}
+						}
+ 
+				case .denied, .restricted:
+						authorizationStatus = .denied
+ 
+				@unknown default:
+						authorizationStatus = .denied
+				}
+		}
+ 
+		private func setupCamera() {
+				guard !isConfigured else { return }
+				isConfigured = true
+				session.beginConfiguration()
+ 
+				guard
+						let device = AVCaptureDevice.default(for: .video),
+						let input  = try? AVCaptureDeviceInput(device: device),
+						session.canAddInput(input)
+				else {
+						session.commitConfiguration()
+						return
+				}
+				session.addInput(input)
+				videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "camera.frame.queue"))
+				if session.canAddOutput(videoOutput) {
+						session.addOutput(videoOutput)
+				}
+ 
+				session.commitConfiguration()
+				startSession()
+//				DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//						self?.session.startRunning()
+//				}
+		}
+	
+		// Golden truth setup
+		func loadGoldenTruth(from image: UIImage) {
+				guard let cgImage = image.cgImage else { return }
+				
+				let request = VNGenerateImageFeaturePrintRequest()
+				let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+				
+				do {
+						try handler.perform([request])
+						if let observation = request.results?.first as? VNFeaturePrintObservation {
+								self.goldenObservation = observation
+								print("Golden Truth loaded.")
+						}
+				} catch {
+						print("Failed to load golden truth: \(error.localizedDescription)")
+				}
+		}
+ 
+		// capture frame
+		private func scheduleTimer() {
+				timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+						self?.processLatestFrame()
+				}
+		}
+ 
+		private func processLatestFrame() {
+				// 1. Ensure we have a buffer and our golden truth is ready
+				guard let buffer = latestBuffer,
+							let pixelBuffer = CMSampleBufferGetImageBuffer(buffer),
+							let goldenObservation = self.goldenObservation else { return }
+				
+				// 2. We move the heavy Vision processing to a background thread
+				// so your UI doesn't stutter every 3 seconds.
+				DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+						
+						let request = VNGenerateImageFeaturePrintRequest()
+						let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
+						
+						do {
+								try handler.perform([request])
+								guard let liveObservation = request.results?.first as? VNFeaturePrintObservation else { return }
+								
+								// 3. Calculate the distance
+								var distance: Float = 0
+								try liveObservation.computeDistance(&distance, to: goldenObservation)
+							
+								print("🔍 RAW VISION DISTANCE: \(distance)")
+								
+								// 4. Convert distance (Float) to percentage (Double) and update UI
+								let percentage = self?.convertDistanceToPercentage(distance) ?? 0.0
+								
+								DispatchQueue.main.async {
+										self?.matchPercentage = percentage
+								}
+								
+						} catch {
+								print("Vision comparison failed: \(error.localizedDescription)")
+						}
+				}
+		}
+	
+		private func convertDistanceToPercentage(_ distance: Float) -> Double {
+				// 1. Define our specific real-world window based on your testing
+				let worstDistance: Float = 1.15 // The keyboard
+				let bestDistance: Float = 0.95  // The screen batter (giving a little buffer below 0.98)
+				
+				// 2. If it's worse than our worst, it's a 0% match
+				if distance >= worstDistance { return 0.0 }
+				
+				// 3. If it's better than our best, it's a 100% match
+				if distance <= bestDistance { return 1.0 }
+				
+				// 4. If it's in the middle, calculate where it falls in that specific window
+				let range = worstDistance - bestDistance
+				let currentPosition = worstDistance - distance
+				
+				let percentage = currentPosition / range
+				
+				return Double(percentage)
+		}
+ 
+		private func convertToUIImage(buffer: CMSampleBuffer) -> UIImage? {
+				guard let pixelBuffer = CMSampleBufferGetImageBuffer(buffer) else { return nil }
+				let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+				let context = CIContext()
+				guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+				return UIImage(cgImage: cgImage)
+		}
+ 
+		func captureOutput(_ output: AVCaptureOutput,
+											 didOutput sampleBuffer: CMSampleBuffer,
+											 from connection: AVCaptureConnection) {
+				latestBuffer = sampleBuffer
+		}
+	#endif
+}
+		

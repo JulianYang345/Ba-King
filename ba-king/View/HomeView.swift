@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
 	var body: some View {
-		NavigationStack {
+//		NavigationStack {
 			ZStack{
 				ZStack(alignment: .topTrailing){
 					Color(red: 0.96, green: 0.96, blue: 0.96).ignoresSafeArea()
@@ -42,7 +42,7 @@ struct HomeView: View {
 							}
 							
 						}
-						.padding(.horizontal, 24)
+						.padding(.horizontal, 60)
 						.padding(.vertical, 40)
 					}.padding(.bottom,30)
 					Spacer()
@@ -59,7 +59,7 @@ struct HomeView: View {
 			}
 		}
 	}
-}
+//}
 
 #Preview {
 	HomeView()

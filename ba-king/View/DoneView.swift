@@ -11,7 +11,7 @@ struct DoneView: View {
 	@State private var MixAgain = false
 	@State private var BackHome = false
 	var body: some View {
-		NavigationStack{
+//		NavigationStack{
 			ZStack {
 				ZStack(alignment: .topTrailing){
 					Color(red: 0.96, green: 0.96, blue: 0.96).ignoresSafeArea()
@@ -142,7 +142,7 @@ struct DoneView: View {
 			}
 		}
 	}
-}
+//}
 
 #Preview {
 		DoneView()

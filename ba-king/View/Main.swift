@@ -10,9 +10,10 @@ import SwiftUI
 struct Main: View {
 		@StateObject private var cameraVM = CameraViewModel()
 		@State private var isNavigating = false
-		@State private var instruction = false
+		@State private var isDone = false
+
 		var body: some View {
-				NavigationStack {
+//				NavigationStack {
 						ZStack {
 								Image("main - VERTICAL")
  
@@ -23,18 +24,21 @@ struct Main: View {
 												Text("REFERENCE")
 														.font(.custom("Helvetica", size: 16))
 														.bold()
-												RoundedRectangle(cornerRadius: 20)
-														.fill(Color(red: 0.85, green: 0.85, blue: 0.85))
+												Image("PerfectBatter")
+														.resizable()
+														.scaledToFill()
 														.frame(height: 200)
+														.clipShape(RoundedRectangle(cornerRadius: 20))
  
 												// Live Feed
 												Text("LIVE FEED")
 														.font(.custom("Helvetica", size: 16))
 														.bold()
 												CameraPreview(session: cameraVM.session)
-													.frame(height: 350)
-													.clipShape(RoundedRectangle(cornerRadius: 20))
-			
+														.frame(height: 350)
+														.clipShape(RoundedRectangle(cornerRadius: 20))
+														.ignoresSafeArea()
+ 
 												// Progress Bar
 												HStack {
 														Text("Progress")
@@ -58,12 +62,27 @@ struct Main: View {
 										}
 										.padding(.horizontal, 26)
 								}
+							NavigationLink("", destination: Tips(), isActive: $isNavigating)
+							NavigationLink("", destination: DoneView(), isActive: $isDone)
 						}
-						//call instruction true
 						.onAppear {
-							cameraVM.start()
-							instruction = true}
+								// 2. Load the image safely into memory
+								if let goldenUIImage = UIImage(named: "PerfectBatter") {
+										// Feed the visual signature to your analyzer
+										cameraVM.loadGoldenTruth(from: goldenUIImage)
+								} else {
+										print("Error: Could not find 'PerfectBatter' in Assets.")
+								}
+								
+								// Start the camera feed
+								cameraVM.start()
+						}
 						.onDisappear { cameraVM.stop() }
+						.onChange(of: cameraVM.matchPercentage) { newValue in
+								if newValue >= 0.85 { // 85% to account for real world lighting
+										isDone = true
+								}
+						}
 						.navigationBarTitleDisplayMode(.inline)
 						.toolbar {
 								ToolbarItem(placement: .principal) {
@@ -90,7 +109,7 @@ struct Main: View {
 						}
 				}
 		}
-}
+//}
  
 #Preview {
 		Main()

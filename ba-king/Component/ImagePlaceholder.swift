@@ -13,6 +13,8 @@ struct ImagePlaceholder: View {
 	var body: some View {
 		if let image {
 			image
+				.resizable()
+				.scaledToFill()
 		} else {
 			Color.gray.brightness(0.3)
 		}
