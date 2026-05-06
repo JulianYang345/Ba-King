@@ -10,7 +10,7 @@ import SwiftUI
 struct Main: View {
 		@StateObject private var cameraVM = CameraViewModel()
 		@State private var isNavigating = false
-
+		@State private var instruction = false
 		var body: some View {
 				NavigationStack {
 						ZStack {
@@ -32,9 +32,9 @@ struct Main: View {
 														.font(.custom("Helvetica", size: 16))
 														.bold()
 												CameraPreview(session: cameraVM.session)
-														.frame(height: 350)
-														.clipShape(RoundedRectangle(cornerRadius: 20))
- 
+													.frame(height: 350)
+													.clipShape(RoundedRectangle(cornerRadius: 20))
+			
 												// Progress Bar
 												HStack {
 														Text("Progress")
@@ -59,7 +59,10 @@ struct Main: View {
 										.padding(.horizontal, 26)
 								}
 						}
-						.onAppear { cameraVM.start() }
+						//call instruction true
+						.onAppear {
+							cameraVM.start()
+							instruction = true}
 						.onDisappear { cameraVM.stop() }
 						.navigationBarTitleDisplayMode(.inline)
 						.toolbar {
@@ -80,7 +83,11 @@ struct Main: View {
 										}
 								}
 						}
-					NavigationLink("", destination: Tips(),isActive: $isNavigating)
+						NavigationLink("", destination: Tips(),isActive: $isNavigating)
+						//pop up Instruction call
+						.sheet(isPresented: $instruction) {
+								InstructionView()
+						}
 				}
 		}
 }
