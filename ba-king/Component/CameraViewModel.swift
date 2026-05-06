@@ -154,6 +154,8 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 								// 3. Calculate the distance
 								var distance: Float = 0
 								try liveObservation.computeDistance(&distance, to: goldenObservation)
+							
+								print("🔍 RAW VISION DISTANCE: \(distance)")
 								
 								// 4. Convert distance (Float) to percentage (Double) and update UI
 								let percentage = self?.convertDistanceToPercentage(distance) ?? 0.0
@@ -169,16 +171,21 @@ class CameraViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
 		}
 	
 		private func convertDistanceToPercentage(_ distance: Float) -> Double {
-				// A distance of 0 is a 100% match.
-				// You will need to test with real batter to find the "max distance"
-				// where the batter is completely wrong. Let's assume 30.0 for now.
-				let maxDistance: Float = 30.0
+				// 1. Define our specific real-world window based on your testing
+				let worstDistance: Float = 1.15 // The keyboard
+				let bestDistance: Float = 0.95  // The screen batter (giving a little buffer below 0.98)
 				
-				// Clamp the distance so it doesn't go over max
-				let clampedDistance = min(max(distance, 0), maxDistance)
+				// 2. If it's worse than our worst, it's a 0% match
+				if distance >= worstDistance { return 0.0 }
 				
-				// Invert it to get a percentage
-				let percentage = (1.0 - (clampedDistance / maxDistance)) * 100.0
+				// 3. If it's better than our best, it's a 100% match
+				if distance <= bestDistance { return 1.0 }
+				
+				// 4. If it's in the middle, calculate where it falls in that specific window
+				let range = worstDistance - bestDistance
+				let currentPosition = worstDistance - distance
+				
+				let percentage = currentPosition / range
 				
 				return Double(percentage)
 		}

@@ -79,7 +79,7 @@ struct Main: View {
 						}
 						.onDisappear { cameraVM.stop() }
 						.onChange(of: cameraVM.matchPercentage) { newValue in
-								if newValue >= 1.0 {
+								if newValue >= 0.85 { // 85% to account for real world lighting
 										isDone = true
 								}
 						}
